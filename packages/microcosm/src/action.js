@@ -187,17 +187,20 @@ class Action extends Emitter {
    * Set up an action such that it depends on the result of another
    * series of actions.
    */
-  link(actions: Action[]): this {
-    let outstanding = actions.length
-    let answers = []
+  link(actions: Action[] | { [string]: Action }): this {
+    let keys = Object.keys(actions)
+    let outstanding = keys.length
+    let answers = Array.isArray(actions) ? [] : {}
 
-    if (actions.length === 0) {
+    if (keys.length <= 0) {
       return this.resolve(answers)
     }
 
-    actions.forEach(action => {
+    keys.forEach(key => {
+      let action = actions[key]
+
       let onResolve = answer => {
-        answers[actions.indexOf(action)] = answer
+        answers[key] = answer
         outstanding -= 1
 
         if (outstanding <= 0) {
