@@ -7,7 +7,7 @@
 import coroutine from './coroutine'
 import Emitter, { type Callback } from './emitter'
 import tag from './tag'
-import { uid } from './utils'
+import { set, uid } from './utils'
 
 type ActionUpdater = (payload?: mixed) => *
 type Revision = { status: string, payload: *, timestamp: number }
@@ -187,8 +187,8 @@ class Action extends Emitter {
    * Set up an action such that it depends on the result of another
    * series of actions.
    */
-  link(actions: Action[] | { [string]: Action }): this {
-    let keys = Object.keys(actions)
+  link(actions: *): this {
+    let keys = Object.keys(Object(actions))
     let outstanding = keys.length
     let answers = Array.isArray(actions) ? [] : {}
 
@@ -208,9 +208,11 @@ class Action extends Emitter {
         }
       }
 
-      action.onDone(onResolve)
-      action.onCancel(onResolve)
-      action.onError(this.reject)
+      action.subscribe({
+        onDone: onResolve,
+        onCancel: onResolve,
+        onError: this.reject
+      })
     })
 
     return this
