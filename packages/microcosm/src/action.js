@@ -7,7 +7,7 @@
 import coroutine from './coroutine'
 import Emitter, { type Callback } from './emitter'
 import tag from './tag'
-import { set, uid } from './utils'
+import { uid } from './utils'
 
 type ActionUpdater = (payload?: mixed) => *
 type Revision = { status: string, payload: *, timestamp: number }
